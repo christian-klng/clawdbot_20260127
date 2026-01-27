@@ -17,4 +17,18 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-CMD ["clawdbot", "gateway", "--bind", "lan", "--port", "8080", "--allow-unconfigured"]
+# Create startup script that writes config before starting
+RUN echo '#!/bin/bash\n\
+mkdir -p /data/.clawdbot\n\
+cat > /data/.clawdbot/clawdbot.json << EOF\n\
+{\n\
+  "gateway": {\n\
+    "mode": "local",\n\
+    "token": "${CLAWDBOT_GATEWAY_TOKEN}"\n\
+  }\n\
+}\n\
+EOF\n\
+exec clawdbot gateway --bind lan --port 8080\n\
+' > /start.sh && chmod +x /start.sh
+
+CMD ["/bin/bash", "/start.sh"]
