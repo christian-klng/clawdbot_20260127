@@ -21,13 +21,23 @@ cat > /data/.clawdbot/clawdbot.json << EOF\n\
 {\n\
   "gateway": {\n\
     "mode": "local",\n\
+    "controlUi": {\n\
+      "enabled": true,\n\
+      "allowInsecureAuth": true\n\
+    },\n\
     "auth": {\n\
+      "mode": "token",\n\
       "token": "${CLAWDBOT_GATEWAY_TOKEN}"\n\
+    }\n\
+  },\n\
+  "agents": {\n\
+    "defaults": {\n\
+      "workspace": "/data/workspace"\n\
     }\n\
   }\n\
 }\n\
 EOF\n\
-exec clawdbot gateway --bind lan --port 8080 --allow-unconfigured\n\
+exec clawdbot gateway --bind lan --port 8080\n\
 ' > /start.sh && chmod +x /start.sh
 
 CMD ["/bin/bash", "/start.sh"]
