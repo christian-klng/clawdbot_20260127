@@ -5,10 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install clawdbot from npm (pre-built)
 RUN npm install -g clawdbot@latest
 
-# Create data directories
 RUN mkdir -p /data/.clawdbot /data/workspace
 
 ENV CLAWDBOT_STATE_DIR=/data/.clawdbot
@@ -17,7 +15,6 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-# Create startup script that writes config before starting
 RUN echo '#!/bin/bash\n\
 mkdir -p /data/.clawdbot\n\
 cat > /data/.clawdbot/clawdbot.json << EOF\n\
@@ -25,16 +22,12 @@ cat > /data/.clawdbot/clawdbot.json << EOF\n\
   "gateway": {\n\
     "mode": "local",\n\
     "auth": {\n\
-      "mode": "token",\n\
       "token": "${CLAWDBOT_GATEWAY_TOKEN}"\n\
     }\n\
-  },\n\
-  "web": {\n\
-    "dmPolicy": "open"\n\
   }\n\
 }\n\
 EOF\n\
-exec clawdbot gateway --bind lan --port 8080\n\
+exec clawdbot gateway --bind lan --port 8080 --allow-unconfigured\n\
 ' > /start.sh && chmod +x /start.sh
 
 CMD ["/bin/bash", "/start.sh"]
