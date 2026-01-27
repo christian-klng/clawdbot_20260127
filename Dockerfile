@@ -25,8 +25,12 @@ cat > /data/.clawdbot/clawdbot.json << EOF\n\
   "gateway": {\n\
     "mode": "local",\n\
     "auth": {\n\
+      "mode": "token",\n\
       "token": "${CLAWDBOT_GATEWAY_TOKEN}"\n\
     }\n\
+  },\n\
+  "web": {\n\
+    "dmPolicy": "open"\n\
   }\n\
 }\n\
 EOF\n\
