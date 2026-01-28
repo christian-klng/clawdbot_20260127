@@ -2,14 +2,19 @@
 set -e
 
 mkdir -p /data/.clawdbot
+mkdir -p /data/workspace
 
-# Use CLAWDBOT_CONFIG env var if set, otherwise use default
-if [ -n "$CLAWDBOT_CONFIG" ]; then
-  echo "Using config from CLAWDBOT_CONFIG environment variable"
-  echo "$CLAWDBOT_CONFIG" > /data/.clawdbot/clawdbot.json
+# Only create config if it doesn't exist yet (preserve existing config across redeploys)
+if [ -f "/data/.clawdbot/clawdbot.json" ]; then
+  echo "Existing config found, preserving it."
 else
-  echo "Using default config"
-  cat > /data/.clawdbot/clawdbot.json << EOF
+  # Use CLAWDBOT_CONFIG env var if set, otherwise use default
+  if [ -n "$CLAWDBOT_CONFIG" ]; then
+    echo "Creating config from CLAWDBOT_CONFIG environment variable"
+    echo "$CLAWDBOT_CONFIG" > /data/.clawdbot/clawdbot.json
+  else
+    echo "Creating default config"
+    cat > /data/.clawdbot/clawdbot.json << EOF
 {
   "gateway": {
     "mode": "local",
@@ -29,9 +34,10 @@ else
   }
 }
 EOF
+  fi
 fi
 
-echo "Config written:"
+echo "Current config:"
 cat /data/.clawdbot/clawdbot.json
 
 exec clawdbot gateway --bind lan --port 8080
